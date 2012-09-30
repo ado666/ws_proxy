@@ -1,0 +1,22 @@
+конструктор:
+
+var address 		= 'destination.ru:8000'; // socket to websocket/pooling service
+var path		= 'ws_asd'; // zmq path
+var url			= 'http://destination.ru/iframe.html';
+var onmessage		= function(msg){console.log(msg)};
+
+var con	= new Connection({
+	host		: address,
+	path		: path,
+	url		: url,
+	onmessage	: onmessage
+});
+
+url - путь к iframe, лежащему на том же хосте, где и пулинг сервер. сам ифрейм включает в себя 2 файла: ws.js и proxy.js так же лежащих на пулинг сервере.
+
+onmessage - функция в которую приходят сообщения от iframe’а вида: ‘{"action":"on_load","message":"{userId: 1}"}’
+где, action может принять значения “on_load”, приходящее при открытии соединения, “message” - обычное сообщение или “on_close” - при закрытии сокета. в свойтве message находится информация, пришедшая от сервера.
+
+con.send(msg) - отправляет сообщение.
+
+
