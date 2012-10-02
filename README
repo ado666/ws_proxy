@@ -6,8 +6,8 @@
 
 Конструктор Connection():
 
-var address 		= 'chat.somedoimain.com:8001'; // socket to websocket/pooling service
-var path		= 'ws_chat'; // zerogw route
+var address 		= 'chat.somedoimain.com:8001';
+var path		= 'ws_chat';
 var url			= 'http://chat.somedomain.com:8001/connection.html';
 var onmessage_fn	= function(msg){console.log(msg)};
 var self		= this;
