@@ -239,10 +239,10 @@ HTTPPolling.prototype.send = function(data) {
 
     function onopen(){
         if (ie_old){
-		parent.window.onOpen(parent.JSON.stringify({action: 'on_load', message: ''}));
+		parent.window.onMessage(parent.JSON.stringify({action: 'on_open', message: ''}));
 	}
         else {
-        	parent.window.postMessage(JSON.stringify({action: 'on_load', message: ''}), '*');
+        	parent.window.postMessage(JSON.stringify({action: 'on_open', message: ''}), '*');
         }
     };
 

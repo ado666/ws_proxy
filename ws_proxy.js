@@ -27,10 +27,7 @@ function Connection(config){
 	if (getInternetExplorerVersion() < 9) {
 		var local_t = config.target;
 		window.onMessage    = function(data) {
-			local_t.onMessage({data:data});
-		}
-		window.onOpen    = function(data) {
-			local_t.onOpen(data);
+			local_t.onmessage({data:data});
 		}
 		window.iframecfg	= config;
 	};

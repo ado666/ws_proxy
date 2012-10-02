@@ -1,22 +1,52 @@
-конструктор:
+Поддомен №1: project.somedomain.com - на нем лежит сам проект и игроки заходят на него.
+Поддомен №2: chat.somedomain.com:8001 - на нем пуллинг сервер.
+(В частном случае поддомены могут совпадать)
 
-var address 		= 'destination.ru:8000'; // socket to websocket/pooling service
-var path		= 'ws_asd'; // zmq path
-var url			= 'http://destination.ru/iframe.html';
-var onmessage		= function(msg){console.log(msg)};
+Клиенту подгружается только ws_proxy.js, iframe с connetion.html создастся автоматически при инициализции Connection().
+
+Конструктор Connection():
+
+var address 		= 'chat.somedoimain.com:8001'; // socket to websocket/pooling service
+var path		= 'ws_chat'; // zerogw route
+var url			= 'http://chat.somedomain.com:8001/connection.html';
+var onmessage_fn	= function(msg){console.log(msg)};
+var self		= this;
 
 var con	= new Connection({
 	host		: address,
 	path		: path,
 	url		: url,
-	onmessage	: onmessage
+	onmessage	: onmessage_fn,
+	target		: self
 });
 
-url - путь к iframe, лежащему на том же хосте, где и пулинг сервер. сам ифрейм включает в себя 2 файла: ws.js и proxy.js так же лежащих на пулинг сервере.
+Параметр target нужен для совместимости с IE8. В его случае не будет вызван onmessage_fn(), а будет вызван target.onmessage(msg);
 
-onmessage - функция в которую приходят сообщения от iframe’а вида: ‘{"action":"on_load","message":"{userId: 1}"}’
-где, action может принять значения “on_load”, приходящее при открытии соединения, “message” - обычное сообщение или “on_close” - при закрытии сокета. в свойтве message находится информация, пришедшая от сервера.
+Пример конфига роута ZeroGW.
+    "/ws_chat*":
+      websocket:
+        enabled: yes
+        allow-origins:
+        - http://chat.somedomain.com:8001
+        - http://127.0.0.1:8001
+        forward:
+        - !zmq.Bind "tcp://127.0.0.1:7122"
+        named-outputs:
+          simplechatbg: !zmq.Pub
+            sync-interval: 10
+            =:
+            - !zmq.Bind "tcp://127.0.0.1:7125"
+        subscribe:
+        - !zmq.Bind "tcp://127.0.0.1:7123"
+Важно, чтобы были прописаны оба - и доменное имя и IP пуллинг-сервера (с портами, если они не 80).
 
-con.send(msg) - отправляет сообщение.
+От Connection приходят сообщения, у которых есть ключ 'data' следущей структуры (строка): '{"action":"on_open","message":"{userId: 1}"}'
+Варианты action: 
+on_open		- соединение установлено
+on_message	- пришло сообщение с сервера
+on_close	- закрыто соединение
 
+в свойстве message находится информация, пришедшая от сервера.
 
+Отправить сообщение на сервер (в виде строки):
+con.send(message);
