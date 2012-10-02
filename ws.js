@@ -12,7 +12,7 @@ function Connection(path, host) {
         this.conn.onerror = function(ev) { self.http_fallback(ev); }
 	setTimeout(function(){
 		if (self.conn.readyState != 1){
-			self.http_fallback(ev);
+			self.http_fallback(self.conn);
 		}
 	}, 4000, this)
     } else {

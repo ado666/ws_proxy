@@ -48,7 +48,7 @@
 	}
     };
 
-    function onopen	= function(){
+    function onopen(){
         if (ie_old){
 		parent.window.onOpen(parent.JSON.stringify({action: 'on_load', message: ''}));
 	}
