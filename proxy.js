@@ -48,6 +48,16 @@
 	}
     };
 
+    function onopen	= function(){
+        if (ie_old){
+		parent.window.onOpen(parent.JSON.stringify({action: 'on_load', message: ''}));
+	}
+        else {
+        	parent.window.postMessage(JSON.stringify({action: 'on_load', message: ''}), '*');
+        }
+    };
+
+
 
     function init (data){
         var cfg     = data.message;
@@ -56,14 +66,7 @@
         ws  = new Connection('/'+cfg.path, cfg.host);
         
         ws.onmessage    = onmessage;
-        ws.onopen       = function(){
-        if (ie_old){
-                parent.window.onOpen(parent.JSON.stringify({action: 'on_load', message: ''}));
-            }
-            else {
-                parent.window.postMessage(JSON.stringify({action: 'on_load', message: ''}), '*');
-            }
-        }
+        ws.onopen       = onopen;
 	ws.onclose	= onclose;
     };
 
@@ -104,62 +107,3 @@ $( function() {
     };
 });
 
-   /* ws          = null;
-    ws_config   = null;
-
-    
-    function onopen () {
-        ws.send('auth.do ' + ws_config.key);
-    };
-
-    function onmessage (evt) {
-        if (evt.data == 'ping'){
-            ws.send('pong');
-        };
-        if (evt.data == 'auth.ok'){
-            return;
-        };
-        parent.window.postMessage({action: 'message', message: JSON.parse(evt.data)}, '*');
-    };
-
-    function onclose (evt) {
-        console.log('connection closed by server: ' + evt.code + ', ' + evt.reasen);
-    };
-
-    function init (data){
-        var cfg     = data.message;
-        ws_config   = cfg;
-        ws  = new Connection('/'+cfg.path, cfg.host+':'+cfg.port);
-        
-	ws.onopen       = onopen;
-        ws.onmessage    = onmessage;
-        ws.onclose      = onclose;
-    };
-
-    function send (data){
-        console.log('call send ' + data.message)
-        ws.send(data.message);
-    };
-
-	function listener (e){
-		var data    = JSON.parse(e.data);
-        
-        var handler = null;
-
-        switch (data.action){
-            case 'init':
-                handler = init;
-                break;
-            case 'send':
-                handler = send;
-                break;
-        };
-
-        if (handler)    handler(data);
-	};
-
-	if (window.addEventListener){
-        window.addEventListener("message", listener,false);
-    } else {
-        window.attachEvent("onmessage", listener);
-    };*/
